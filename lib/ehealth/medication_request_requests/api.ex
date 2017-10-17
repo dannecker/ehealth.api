@@ -13,6 +13,7 @@ defmodule EHealth.MedicationRequestRequests do
   alias EHealth.MedicationRequestRequest
   alias EHealth.MedicationRequestRequest.Operation
   alias EHealth.MedicationRequestRequest.Validations
+  alias EHealth.MedicationRequestRequest.SignOperation
   alias EHealth.MedicationRequestRequest.CreateDataOperation
   alias EHealth.MedicationRequestRequest.RejectOperation
   alias EHealth.MedicationRequestRequest.HumanReadableNumberGenerator, as: HRNGenerator
@@ -187,5 +188,15 @@ defmodule EHealth.MedicationRequestRequests do
     MedicationRequestRequest
     |> where([mrr], mrr.status == ^@status_new)
     |> where([mrr], mrr.inserted_at < ^termination_time)
+  end
+
+  def sign(id, params, user_id, client_id) do
+    require IEx;IEx.pry
+    with :ok <- Validations.validate_sign_schema(params),
+         %MedicationRequestRequest{} = mrr <- get_medication_request_request(id),
+         :ok <- SignOperation.sign(mrr, params, client_id)
+    do
+      require IEx;IEx.pry
+    end
   end
 end

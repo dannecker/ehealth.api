@@ -320,6 +320,38 @@ defmodule EHealth.Web.MedicationRequestRequestControllerTest do
     end
   end
 
+  describe "sign medication request request" do
+    test "when data is valid", %{conn: conn} do
+      medication_id = create_medications_structure()
+      test_request =
+        test_request()
+        |> Map.put("medication_id", medication_id)
+      conn1 = post conn, medication_request_request_path(conn, :create), medication_request_request: test_request
+      assert mrr = json_response(conn1, 201)["data"]
+
+      signed_mrr =
+        mrr["data"]
+        |> Map.put("employee_signed", true)
+        |> Poison.encode!()
+        |> Base.encode64()
+
+      conn1 = patch conn, medication_request_request_path(conn, :sign, mrr["id"]),
+        %{signed_medication_request_request: signed_mrr, signed_content_encoding: "base64"}
+      assert json_response(conn1, 200)
+    end
+
+    test "return 404 if request not found", %{conn: conn} do
+      conn1 = patch conn, medication_request_request_path(conn, :sign, Ecto.UUID.generate()),
+      %{signed_medication_request_request: "", signed_content_encoding: "base64"}
+      assert json_response(conn1, 404)
+    end
+
+    test "return 422 if request is not valid", %{conn: conn} do
+      conn1 = patch conn, medication_request_request_path(conn, :sign, Ecto.UUID.generate()),
+      %{signed_medication_request_request: %{}, signed_content_encoding: "base64"}
+      assert json_response(conn1, 422)
+    end
+  end
 
   defp create_medications_structure do
     %{id: dosage_id1} = insert(:prm, :innm_dosage, name: "Бупропіон Форте")
