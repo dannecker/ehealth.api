@@ -5,7 +5,7 @@ defmodule EHealth.DuplicatePersons.Cleanup do
   alias EHealth.API.MPI
   alias EHealth.Declarations.Person
 
-  @technical_consumer_id "dadadada-baba-4359-94d6-a3f524b8d829"
+  @technical_consumer_id "4261eacf-8008-4e62-899f-de1e2f7065f0"
 
   def cleanup(id, person_id) do
     {:ok, %{"data" => declarations}} =
