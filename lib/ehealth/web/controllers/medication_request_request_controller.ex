@@ -47,11 +47,7 @@ defmodule EHealth.Web.MedicationRequestRequestController do
   end
 
   def sign(conn, params) do
-    user_id = get_consumer_id(conn.req_headers)
-    client_id = get_client_id(conn.req_headers)
-
-    {id, params} = Map.pop(params, "id")
-    with {:ok, mrr} <- API.sign(id, params, user_id, client_id) do
+    with {:ok, mrr} <- API.sign(params, conn.req_headers) do
       conn
       |> put_status(200)
       |> render("show.json", medication_request_request: mrr)

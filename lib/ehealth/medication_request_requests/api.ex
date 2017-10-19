@@ -192,10 +192,11 @@ defmodule EHealth.MedicationRequestRequests do
     |> where([mrr], mrr.inserted_at < ^termination_time)
   end
 
-  def sign(id, params, user_id, client_id) do
+  def sign(params, headers) do
+    {id, params} = Map.pop(params, "id")
     with :ok <- Validations.validate_sign_schema(params),
          %MedicationRequestRequest{} = mrr <- get_medication_request_request_by_query([id: id, status: "NEW"]),
-         {:ok, mrr} <- SignOperation.sign(mrr, params, client_id)
+         {:ok, mrr} <- SignOperation.sign(mrr, params, headers)
     do
       mrr
       |> sign_changeset

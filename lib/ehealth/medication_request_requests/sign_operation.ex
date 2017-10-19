@@ -1,6 +1,5 @@
 defmodule EHealth.MedicationRequestRequest.SignOperation do
   @moduledoc false
-  import Ecto.Changeset
   import EHealth.MedicationRequestRequest.OperationHelpers
 
   alias EHealth.API.MediaStorage
@@ -8,13 +7,13 @@ defmodule EHealth.MedicationRequestRequest.SignOperation do
   alias EHealth.MedicationRequestRequest.Validations
   alias EHealth.API.OPS
 
-  def sign(mrr, params, client_id) do
+  def sign(mrr, params, headers) do
     %Ecto.Changeset{}
     |> Operation.new
     |> validate_data(params, &decode_sign_content/2, key: :decoded_content)
     |> validate_sign_content(mrr)
     |> upload_sign_content(params, mrr)
-    |> create_medication_request()
+    |> create_medication_request(headers)
     |> validate_ops_resp(mrr)
   end
 
@@ -28,7 +27,7 @@ defmodule EHealth.MedicationRequestRequest.SignOperation do
   end
 
   def upload_sign_content({:error, error}, _, _), do: {:error, error}
-  def upload_sign_content({:ok, content}, params, mrr) do
+  def upload_sign_content({:ok, _content}, params, mrr) do
     params
     |> Map.fetch!("signed_medication_request_request")
     |> MediaStorage.store_signed_content(:medication_request_bucket, Map.fetch!(mrr, :medication_request_id), [])
@@ -38,15 +37,15 @@ defmodule EHealth.MedicationRequestRequest.SignOperation do
   defp validate_api_response({:ok, _}, db_data), do: {:ok, db_data}
   defp validate_api_response(error, _db_data), do: error
 
-  def create_medication_request({:error, error}), do: {:error, error}
-  def create_medication_request({:ok, mrr}) do
+  def create_medication_request({:error, error}, _), do: {:error, error}
+  def create_medication_request({:ok, mrr}, headers) do
     params =
       mrr.data
       |> Map.put(:id, mrr.medication_request_id)
       |> Map.put(:medication_request_requests_id, mrr.id)
       |> Map.put(:request_number, mrr.number)
       |> Map.put(:verification_code, mrr.verification_code)
-    OPS.create_medication_request(%{medication_request: params})
+    OPS.create_medication_request(%{medication_request: params}, headers)
   end
 
   def validate_ops_resp({:error, error}, _), do: {:error, error}
