@@ -13,6 +13,7 @@ defmodule EHealth.MedicationRequestRequests do
   alias EHealth.API.OPS
   alias EHealth.PRM.MedicalPrograms
   alias EHealth.MedicationRequestRequest
+  alias EHealth.MedicationRequests.SMSSender
   alias EHealth.MedicationRequestRequest.Operation
   alias EHealth.MedicationRequestRequest.Validations
   alias EHealth.MedicationRequestRequest.SignOperation
@@ -245,6 +246,9 @@ defmodule EHealth.MedicationRequestRequests do
       mrr
       |> sign_changeset
       |> Repo.update
+
+      SMSSender.maybe_send_sms(mrr, operation.data.person, &SMSSender.sign_template/1)
+
       {:ok,
         operation.data.medication_request
         |> Map.put("legal_entity", operation.data.legal_entity)
