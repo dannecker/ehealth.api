@@ -128,8 +128,8 @@ defmodule EHealth.MedicationRequestRequests do
   end
 
   defp put_verification_code(%Operation{valid?: true} = operation) do
-    is_otp = Enum.filter(operation.data.person["authentication_methods"], fn method -> method["type"] == "OTP" end)
-    if length(is_otp) > 0 do
+    otp = Enum.find(operation.data.person["authentication_methods"], nil, fn method -> method["type"] == "OTP" end)
+    if otp do
       HRNGenerator.generate_otp_verification_code()
     else
       nil

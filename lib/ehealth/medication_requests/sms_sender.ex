@@ -4,10 +4,9 @@ defmodule EHealth.MedicationRequests.SMSSender do
   alias EHealth.API.OTPVerification
 
   def maybe_send_sms(mrr, person, template_fun) do
-    is_otp = Enum.filter(person["authentication_methods"], fn method -> method["type"] == "OTP" end)
-    if length(is_otp) > 0 do
-      phone_number = is_otp |> Enum.at(0) |> Map.get("phone_number")
-      {:ok, _} = OTPVerification.send_sms(phone_number, template_fun.(mrr))
+    otp = Enum.find(person["authentication_methods"], nil, fn method -> method["type"] == "OTP" end)
+    if otp do
+      {:ok, _} = OTPVerification.send_sms(otp["phone_number"], template_fun.(mrr))
     end
   end
 
