@@ -262,6 +262,7 @@ dispense_valid_to | date| not null
 person_id | uuid | not null
 employee_id | uuid | not null
 division_id | uuid | not null
+legal_entity_id | uuid | not null
 medication_id | uuid | not null
 medication_qty | number | not null
 status | varchar | not null
