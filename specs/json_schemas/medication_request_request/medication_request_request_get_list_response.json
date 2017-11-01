@@ -156,14 +156,16 @@
                 "type": "array"
               },
               "tax_id": {
-                "type": "string"
+                "not": {}
+              },
+              "documents": {
+                "not": {}
               }
             },
             "required": [
               "id",
               "first_name",
-              "last_name",
-              "tax_id"
+              "last_name"
             ]
           }
         },
