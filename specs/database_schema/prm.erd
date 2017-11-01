@@ -252,7 +252,7 @@ updated_by | uuid | not null
 
 [medication_requests]
 id | uuid | not null
-number | varchar | not null | unique
+request_number | varchar | not null | unique
 verification_code | varchar
 created_at | date | not null
 started_at | date| not null
@@ -313,7 +313,7 @@ inserted_at | timestamp | not null
 id | uuid | not null
 data | jsonb | not null
 status | varchar | not null
-number | varchar | not null | unique
+request_number | varchar | not null | unique
 verification_code | varchar
 medication_request_id | uuid | not null
 inserted_at | timestamp | not null
