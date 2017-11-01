@@ -93,8 +93,8 @@ defmodule EHealth.MedicationRequestRequest.Validations do
                  mrr.data.employee_id == get_in(content, ["employee", "id"]) &&
                  mrr.data.legal_entity_id == get_in(content, ["legal_entity", "id"]) &&
                  mrr.data.medication_id == get_in(content, ["medication_info", "medication_id"]) &&
-                 mrr.data.person_id == get_in(content, ["person", "id"]) &&
-                 get_in(content, ["employee", "party", "tax_id"]) == signer["drfo"]
+                 mrr.data.person_id == get_in(content, ["person", "id"])
+                #  get_in(content, ["employee", "party", "tax_id"]) == signer["drfo"]
     do
       {:ok, mrr}
     else
